@@ -1,0 +1,99 @@
+-- Create Database
+CREATE DATABASE IF NOT EXISTS campusdb;
+USE campusdb;
+
+-- Students Table
+CREATE TABLE IF NOT EXISTS Students (
+    student_id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    college_id INT NOT NULL
+);
+
+-- Events Table
+CREATE TABLE IF NOT EXISTS Events (
+    event_id INT AUTO_INCREMENT PRIMARY KEY,
+    event_name VARCHAR(100) NOT NULL,
+    event_type ENUM('Workshop','Seminar','Hackathon','Fest') NOT NULL,
+    event_date DATE NOT NULL,
+    college_id INT NOT NULL
+);
+
+-- Registrations Table
+CREATE TABLE IF NOT EXISTS Registrations (
+    reg_id INT AUTO_INCREMENT PRIMARY KEY,
+    student_id INT,
+    event_id INT,
+    UNIQUE(student_id, event_id),
+    FOREIGN KEY(student_id) REFERENCES Students(student_id),
+    FOREIGN KEY(event_id) REFERENCES Events(event_id)
+);
+
+-- Attendance Table
+CREATE TABLE IF NOT EXISTS Attendance (
+    attendance_id INT AUTO_INCREMENT PRIMARY KEY,
+    student_id INT,
+    event_id INT,
+    status ENUM('Present','Absent') NOT NULL,
+    UNIQUE(student_id, event_id),
+    FOREIGN KEY(student_id) REFERENCES Students(student_id),
+    FOREIGN KEY(event_id) REFERENCES Events(event_id)
+);
+
+-- Feedback Table
+CREATE TABLE IF NOT EXISTS Feedback (
+    feedback_id INT AUTO_INCREMENT PRIMARY KEY,
+    student_id INT,
+    event_id INT,
+    rating INT CHECK(rating BETWEEN 1 AND 5),
+    comments TEXT,
+    UNIQUE(student_id, event_id),
+    FOREIGN KEY(student_id) REFERENCES Students(student_id),
+    FOREIGN KEY(event_id) REFERENCES Events(event_id)
+);
+
+
+ --Insert Sample Data
+
+
+-- Students
+INSERT INTO Students (name, email, college_id) VALUES
+('Rahul Sharma', 'rahul@example.com', 101),
+('Priya Nair', 'priya@example.com', 101),
+('Arjun Verma', 'arjun@example.com', 102),
+('Sneha Reddy', 'sneha@example.com', 102),
+('Amit Kumar', 'amit@example.com', 101);
+
+-- Events
+INSERT INTO Events (event_name, event_type, event_date, college_id) VALUES
+('Hackathon 2025', 'Hackathon', '2025-09-15', 101),
+('AI Workshop', 'Workshop', '2025-09-20', 101),
+('Tech Fest', 'Fest', '2025-09-25', 102),
+('Cloud Seminar', 'Seminar', '2025-09-28', 102);
+
+-- Registrations
+INSERT INTO Registrations (student_id, event_id) VALUES
+(1, 1), -- Rahul → Hackathon
+(2, 1), -- Priya → Hackathon
+(3, 1), -- Arjun → Hackathon
+(1, 2), -- Rahul → AI Workshop
+(4, 3), -- Sneha → Tech Fest
+(5, 4); -- Amit → Cloud Seminar
+
+-- Attendance
+INSERT INTO Attendance (student_id, event_id, status) VALUES
+(1, 1, 'Present'),
+(2, 1, 'Absent'),
+(3, 1, 'Present'),
+(1, 2, 'Present'),
+(4, 3, 'Present'),
+(5, 4, 'Present');
+
+-- Feedback
+INSERT INTO Feedback (student_id, event_id, rating, comments) VALUES
+(1, 1, 5, 'Amazing hackathon!'),
+(2, 1, 3, 'It was okay'),
+(3, 1, 4, 'Good experience'),
+(1, 2, 5, 'Loved the AI workshop'),
+(4, 3, 4, 'Fest was fun'),
+(5, 4, 5, 'Great seminar!');
